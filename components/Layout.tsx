@@ -1,11 +1,13 @@
 import React, { ReactNode } from 'react';
-import Head from 'next/head';
 import Link from 'next/link';
+import Meta from './Meta';
 
 type LayoutProps = {
   children: ReactNode;
   title?: string;
   description?: string;
+  imageUrl?: string;
+  url?: string;
   showBackButton?: boolean;
 };
 
@@ -13,16 +15,18 @@ export default function Layout({
   children,
   title = 'AI 游戏集合 | 多个有趣的小游戏',
   description = 'AI 驱动的多个有趣小游戏集合，包括职业预测、性格分析等多种互动体验。',
+  imageUrl,
+  url,
   showBackButton = false,
 }: LayoutProps) {
   return (
     <>
-      <Head>
-        <title>{title}</title>
-        <meta name="description" content={description} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <Meta 
+        title={title}
+        description={description}
+        imageUrl={imageUrl}
+        url={url}
+      />
       
       <div className="min-h-screen bg-gradient-to-b from-background to-gray-100">
         <div className="container mx-auto px-4 py-8">

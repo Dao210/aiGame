@@ -72,8 +72,8 @@ export default function JobFinder() {
 
   return (
     <Layout 
-      title="你还有多久能找到工作？ | AI 游戏集合"
-      description="AI预测你找到工作的时间，并提供加速求职的建议。"
+      title="还有多久能找到工作？ | AI 游戏集合"
+      description="我的你的职业AI助手，预测你找到工作的具体时间，提供加速求职的建议"
       showBackButton={true}
     >
       <motion.div
@@ -83,10 +83,10 @@ export default function JobFinder() {
       >
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-text mb-4">
-            你还有多久能找到工作？
+            还有多久能找到工作？
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            输入你的基本信息或简历，AI将预测你找到工作的具体时间，并提供加速求职的建议。
+            我的你的职业AI助手，预测你找到工作的具体时间，提供加速求职的建议
           </p>
         </div>
         

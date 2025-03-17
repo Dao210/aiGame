@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import ShareButton from './ShareButton';
 
 type JobPrediction = {
   timeframe: string;
@@ -61,6 +62,8 @@ export default function JobPredictionResult({ prediction, onReset }: JobPredicti
           ))}
         </ul>
       </div>
+      
+      <ShareButton prediction={prediction} />
       
       <div className="mt-8 flex flex-col sm:flex-row gap-4">
         <button

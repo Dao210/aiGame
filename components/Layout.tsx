@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import Meta from './Meta';
-import Head from 'next/head';
 
 type LayoutProps = {
   children: ReactNode;
@@ -29,15 +28,6 @@ export default function Layout({
         url={url}
       />
       
-      <Head>
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="manifest" href="/site.webmanifest" />
-      </Head>
-
       <div className="min-h-screen bg-gradient-to-b from-background to-gray-100">
         <div className="container mx-auto px-4 py-8">
           {showBackButton && (

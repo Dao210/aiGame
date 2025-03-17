@@ -1,15 +1,14 @@
-import { ImageResponse } from '@vercel/og';
-import { NextRequest } from 'next/server';
+import { NextApiRequest, NextApiResponse } from 'next';
+import satori from 'satori';
+import sharp from 'sharp';
 
-export const config = {
-  runtime: 'edge',
-};
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
 
-export default async function handler(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const timeframe = searchParams.get('timeframe');
-    const confidence = searchParams.get('confidence');
+    const { timeframe, confidence } = req.query;
 
     const funnyTexts = [
       `${confidence}%的概率，我即将脱离无业游民行列！`,
@@ -20,105 +19,125 @@ export default async function handler(req: NextRequest) {
     ];
     const randomText = funnyTexts[Math.floor(Math.random() * funnyTexts.length)];
 
-    return new ImageResponse(
-      (
-        <div
-          style={{
+    const svg = await satori(
+      {
+        type: 'div',
+        props: {
+          style: {
             height: '100%',
             width: '100%',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(to bottom, #4F46E5, #10B981)',
+            backgroundColor: '#4F46E5',
             padding: '40px',
-          }}
-        >
-          {/* 标题 */}
-          <div
-            style={{
-              fontSize: '60px',
-              fontWeight: 'bold',
-              color: 'white',
-              marginBottom: '40px',
-              textAlign: 'center',
-            }}
-          >
-            我的求职倒计时！
-          </div>
-
-          {/* 时间框 */}
-          <div
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              padding: '20px 40px',
-              borderRadius: '20px',
-              border: '2px solid rgba(255, 255, 255, 0.2)',
-              marginBottom: '40px',
-            }}
-          >
-            <div
-              style={{
-                fontSize: '70px',
-                fontWeight: 'bold',
-                color: 'white',
-                textAlign: 'center',
-              }}
-            >
-              {timeframe}
-            </div>
-          </div>
-
-          {/* 幽默文案 */}
-          <div
-            style={{
-              fontSize: '40px',
-              color: 'white',
-              textAlign: 'center',
-              marginBottom: '30px',
-            }}
-          >
-            {randomText}
-          </div>
-
-          {/* 底部提示 */}
-          <div
-            style={{
-              fontSize: '24px',
-              color: 'rgba(255, 255, 255, 0.8)',
-              textAlign: 'center',
-              position: 'absolute',
-              bottom: '80px',
-            }}
-          >
-            AI预测仅供参考，但我的实力不需要AI证明！
-          </div>
-
-          {/* 网站信息 */}
-          <div
-            style={{
-              fontSize: '20px',
-              color: 'rgba(255, 255, 255, 0.6)',
-              position: 'absolute',
-              bottom: '40px',
-              right: '40px',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            AI求职预测 · your-website.com
-          </div>
-        </div>
-      ),
+          },
+          children: [
+            {
+              type: 'div',
+              props: {
+                style: {
+                  fontSize: '60px',
+                  fontWeight: 'bold',
+                  color: 'white',
+                  marginBottom: '40px',
+                  textAlign: 'center',
+                },
+                children: '我的求职倒计时！',
+              },
+            },
+            {
+              type: 'div',
+              props: {
+                style: {
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  padding: '20px 40px',
+                  borderRadius: '20px',
+                  border: '2px solid rgba(255, 255, 255, 0.2)',
+                  marginBottom: '40px',
+                },
+                children: {
+                  type: 'div',
+                  props: {
+                    style: {
+                      fontSize: '70px',
+                      fontWeight: 'bold',
+                      color: 'white',
+                      textAlign: 'center',
+                    },
+                    children: timeframe,
+                  },
+                },
+              },
+            },
+            {
+              type: 'div',
+              props: {
+                style: {
+                  fontSize: '40px',
+                  color: 'white',
+                  textAlign: 'center',
+                  marginBottom: '30px',
+                },
+                children: randomText,
+              },
+            },
+            {
+              type: 'div',
+              props: {
+                style: {
+                  fontSize: '24px',
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  textAlign: 'center',
+                  position: 'absolute',
+                  bottom: '80px',
+                },
+                children: 'AI预测仅供参考，但我的实力不需要AI证明！',
+              },
+            },
+            {
+              type: 'div',
+              props: {
+                style: {
+                  fontSize: '20px',
+                  color: 'rgba(255, 255, 255, 0.6)',
+                  position: 'absolute',
+                  bottom: '40px',
+                  right: '40px',
+                },
+                children: 'AI求职预测 · your-website.com',
+              },
+            },
+          ],
+        },
+      },
       {
         width: 1200,
         height: 630,
-      },
+        fonts: [
+          {
+            name: 'NotoSansSC',
+            data: await fetch(
+              'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap'
+            ).then((res) => res.arrayBuffer()),
+            weight: 400,
+            style: 'normal',
+          },
+        ],
+      }
     );
-  } catch (e) {
-    console.log(`${e.message}`);
-    return new Response(`Failed to generate the image`, {
-      status: 500,
-    });
+
+    // Convert SVG to PNG
+    const pngBuffer = await sharp(Buffer.from(svg))
+      .png()
+      .toBuffer();
+
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.send(pngBuffer);
+  } catch (error) {
+    console.error('Error generating image:', error);
+    res.status(500).json({ error: 'Failed to generate image' });
   }
 } 

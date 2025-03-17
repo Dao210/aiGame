@@ -16,23 +16,10 @@ export default function ShareButton({ prediction }: ShareButtonProps) {
   const generateShareImage = async () => {
     setIsGenerating(true);
     try {
-      const response = await fetch('/api/generate-share-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          timeframe: prediction.timeframe,
-          confidence: prediction.confidence,
-        }),
-      });
+      const url = `/api/generate-share-image?` + 
+        `timeframe=${encodeURIComponent(prediction.timeframe)}` +
+        `&confidence=${encodeURIComponent(prediction.confidence)}`;
       
-      if (!response.ok) {
-        throw new Error('Failed to generate image');
-      }
-      
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
       setShareUrl(url);
       setShowShareOptions(true);
     } catch (error) {

@@ -6,6 +6,10 @@ export const config = {
 };
 
 export default async function handler(req: NextRequest) {
+  if (req.method !== 'GET') {
+    return new Response('Method not allowed', { status: 405 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const timeframe = searchParams.get('timeframe') || '90天';
@@ -20,11 +24,6 @@ export default async function handler(req: NextRequest) {
     ];
     const randomText = funnyTexts[Math.floor(Math.random() * funnyTexts.length)];
 
-    // 加载中文字体
-    const fontData = await fetch(
-      new URL('https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc/files/noto-sans-sc-chinese-simplified-700-normal.woff', import.meta.url)
-    ).then((res) => res.arrayBuffer());
-
     return new ImageResponse(
       (
         <div
@@ -36,7 +35,6 @@ export default async function handler(req: NextRequest) {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: '"Noto Sans SC"',
             padding: 40,
           }}
         >
@@ -49,7 +47,6 @@ export default async function handler(req: NextRequest) {
               gap: 40,
             }}
           >
-            {/* 标题 */}
             <div
               style={{
                 fontSize: 60,
@@ -62,7 +59,6 @@ export default async function handler(req: NextRequest) {
               我的求职倒计时！
             </div>
 
-            {/* 时间框 */}
             <div
               style={{
                 background: 'rgba(255, 255, 255, 0.1)',
@@ -83,7 +79,6 @@ export default async function handler(req: NextRequest) {
               </div>
             </div>
 
-            {/* 幽默文案 */}
             <div
               style={{
                 fontSize: 40,
@@ -96,7 +91,6 @@ export default async function handler(req: NextRequest) {
             </div>
           </div>
 
-          {/* 底部信息 */}
           <div
             style={{
               position: 'absolute',
@@ -118,7 +112,6 @@ export default async function handler(req: NextRequest) {
             </div>
           </div>
 
-          {/* 网站信息和二维码 */}
           <div
             style={{
               position: 'absolute',
@@ -143,19 +136,13 @@ export default async function handler(req: NextRequest) {
       {
         width: 1200,
         height: 630,
-        fonts: [
-          {
-            name: 'Noto Sans SC',
-            data: fontData,
-            style: 'normal',
-            weight: 700,
-          },
-        ],
+        // 使用内置字体，避免外部字体加载问题
+        emoji: 'twemoji',
       },
     );
   } catch (e: any) {
-    console.log(`${e.message}`);
-    return new Response(`Failed to generate the image`, {
+    console.error(`Failed to generate image: ${e.message}`);
+    return new Response(`Failed to generate image: ${e.message}`, {
       status: 500,
     });
   }
